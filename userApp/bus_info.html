@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Bus With Us</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+      <script>
+          
+          var data = localStorage.getItem('myMainData');
+          data = JSON.parse(data);
+      </script>
+  </head>
+  <body>
+
+    <!-- Header -->
+      <header id="header">
+        <nav class="left">
+          <a href="#menu"><span>Menu</span></a>
+        </nav>
+        <a href="index.html" class="logo">Bus with us</a>
+      </header>
+
+
+
+      <section id = "four" class = "Section_One" style="margin-top: -2%" >
+
+        <div class="fly-left" id="nearby_bus" style = "overflow : auto">
+            <h4 class="button scrolly" style="margin-left:2%" id="bus_id" href="#fly-bottom">  </h4>
+            <ul id="bus_stops">
+              
+            </ul>
+        </div>
+          
+
+        <div class="fly-right" id="map">
+        <h3 style="color:white;text-align:center;">My Google Maps Demo</h3>
+
+        </div>
+      </section>
+
+      <div id = "fly-bottom" style = "margin-top: 10%" >
+          <h2 style = "text-align: center; margin-top: 2%">KNOW MORE ABOUT THIS BUS</h2>
+          <div style="margin-top: 5%; margin-left:10%; margin-bottom: 10%">
+            <h4 class = "button scrolly" style = "margin-left:5%; margin-top : 5%" onclick = 
+             "popupBarChart('popUpDiv')" >Crowd-Count</h4>
+            <br>
+            <br>
+            <h4 class = "button scrolly" style = "margin-left:5%; margin-top: 5%" onclick = 
+             "popupScatterPlot('popUpDiv')">Time-deviation</h4> 
+            <br>
+            <br>
+            <h4 class = "button scrolly" style = "margin-left:5% ; margin-top: 5%"onclick = 
+            "prediction('popUpDiv')">Crowd Prediction</h4> 
+          </div>
+           <!--<iframe width="900" height="800" frameborder="0" scrolling="no" src="graph"></iframe> -->   
+      </div>
+     
+    <!-- Footer -->
+      <footer id="footer" style="margin-top:3.5%" >
+        <div class="inner">
+          <h2>Get In Touch</h2>
+          <ul class="actions">
+            <li><span class="icon fa-phone"></span> <a href="#">(000) 000-0000</a></li>
+            <li><span class="icon fa-envelope"></span> <a href="#">information@untitled.tld</a></li>
+            <li><span class="icon fa-map-marker"></span> 123 Somewhere Road, Nashville, TN 00000</li>
+          </ul>
+        </div>
+
+      </footer>
+
+    <!-- Scripts -->
+      <script src="assets/js/jquery.min.js"></script>
+      <script src="assets/js/jquery.scrolly.min.js"></script>
+      <script src="assets/js/skel.min.js"></script>
+      <script src="assets/js/util.js"></script>
+      <script src="assets/js/main.js"></script>
+    <script>
+        document.getElementById('bus_id').innerHTML = data['bus_id'];
+        for(var i=0; i<data['bus_stops'].length; i++)
+        {
+          var out = "<ul><li>"+data['bus_stops'][i]+"</li></ul>"
+          $('#bus_stops').append(out);
+        }
+        
+  </script>
+<script>
+
+      function initMap() {
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        var directionsService = new google.maps.DirectionsService;
+        cntr = data['coordinates'][0].split(" ");
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: {lat: parseFloat(cntr[0]), lng: parseFloat(cntr[1])}
+        });
+
+        
+        for(var i=0; i<data['coordinates'].length-1; i++)
+        {
+          var directionsDisplay = new google.maps.DirectionsRenderer;
+          var directionsService = new google.maps.DirectionsService;
+          directionsDisplay.setMap(map);
+          calculateAndDisplayRoute(directionsService, directionsDisplay,data['coordinates'][i],data["coordinates"][i+1]);
+        }
+
+
+        //calculateAndDisplayRoute(directionsService, directionsDisplay);
+       /* document.getElementById('mode').addEventListener('change', function() {
+          calculateAndDisplayRoute(directionsService, directionsDisplay);
+        });*/
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsDisplay, src, dest) {
+
+        var selectedMode = "WALKING";
+        src = src.split(" ");
+        dest = dest.split(" ");
+        directionsService.route({
+          origin: {lat: parseFloat(src[0]), lng: parseFloat(src[1])},  // Haight.
+          destination: {lat: parseFloat(dest[0]), lng: parseFloat(dest[1])},  // Ocean Beach.
+          // Note that Javascript allows us to access the constant
+          // using square brackets and a string value as its
+          // "property."
+          travelMode: google.maps.TravelMode[selectedMode]
+        }, function(response, status) {
+          if (status == 'OK') {
+            directionsDisplay.setDirections(response);
+          } else {
+            //window.alert('Directions request failed due to ' + status);
+            //console.log(1);
+          }
+        });
+      }
+    </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACcvaPpncPtF5Smi2_dZmGgX3PcgXQF8Y&callback=initMap">
+  </script>
+
+  <div id="popUpDiv" style="display:none;">
+        
+<script type="text/javascript"> 
+    var popUpWindow;
+    function popupBarChart(n) {
+       popUpWindow = window.open("",n, "height=800,width=1000");
+       popUpWindow.document.write('<iframe width="100%" height="100%" frameborder="0" scrolling="yes" src="graph"></iframe>');
+    }
+</script>
+<script type="text/javascript"> 
+    var popUpWindow;
+    function popupScatterPlot(n) {
+       popUpWindow = window.open("",n, "height=800,width=1000");
+       popUpWindow.document.write('<iframe width="100%" height="100%" frameborder="0" scrolling="yes" src="scatterPlot"></iframe>');
+    }
+</script>
+<script type="text/javascript"> 
+    var popUpWindow;
+    function prediction(n) {
+       popUpWindow = window.open("",n, "height=800,width=1000");
+       popUpWindow.document.write('<iframe width="100%" height="100%" frameborder="0" scrolling="yes" src="crowdPrediction"></iframe>');
+    }
+</script>
+</div>
+
+
+    
+
+  </body>
+</html>
